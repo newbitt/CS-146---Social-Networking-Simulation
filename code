@@ -1,0 +1,244 @@
+public class CS146_Project {
+//----------------------------------T A S K --------------------------------------------
+/* Use a graph to design and implement an application that maintains the data for a
+simple social network. Each person in the network should have a profile that
+contains
+the person’s name, current status, and a list of friends. Your
+application should allow a user to join the network, leave the network, create a
+profile,
+modify the profile, search for other profiles, and add friends. Track the friend
+relationships among members of the network. Add a feature to enable people to
+see a list
+of their friends’ friends.
+----------------------------------------------------------------------------------------*/
+public static void main(String[] args) {
+Scanner input = new Scanner (System.in);
+int insideNetwork = 0; //loop default value
+int action; //action state user is in -> switch
+statement
+int netWorkSize = 6; //default size of 6...
+String searchName; //name being searched
+boolean searchSuccess = false; //success of name being
+searched
+boolean addSuccess = false; //success of adding
+someone
+Profile User = new Profile();
+Graph Network = new Graph(netWorkSize); //create a default network
+Network.addFriend(0, 2);
+Network.addFriend(0, 3);
+Network.addFriend(0, 4); //numbers denote objects in adjacency
+list
+Network.addFriend(1, 3);
+Network.addFriend(2, 3);
+Network.addFriend(3, 4);
+//User Introduction
+System.out.println("Welcome to OFFICE Social Networking!");
+//enter network loop - do NOT exit until prompted to do so
+while (insideNetwork >= 0) {
+//refresh success rates
+searchSuccess = false;
+addSuccess = false;
+//prompt user for an action -> into switch statement
+System.out.println("\nHere are our current members:");
+Network.printMembers();
+System.out.print("\n\n1 - Create Profile"
++ "\n2 - Edit Profile"
++ "\n3 - Join Network"
++ "\n4 - Leave Network"
++ "\n5 - Search & Check"
++ "\n6 - Add"
++ "\n7 - Quit\n"); //Leave Network
+can be improved?
+System.out.print("How may I help?:");
+//if user enters a number...
+if(input.hasNextInt() == true) {
+//enter switch statement
+switch (input.nextInt()) {
+case 1: //Create Profile
+if(User.getName() == null) { //limit to only 1 profile
+creation
+System.out.println("Creating profile...");
+//READ USER INPUT
+System.out.print("Name:");
+User.setName(input.next());
+input.nextLine(); //buffer between
+reading string
+System.out.print("Status:");
+User.setStatus(input.nextLine());
+System.out.println("Thanks," + User.getName()
++ "'s profile has been created!");
+}
+else
+System.out.println("Sorry, we don't want clones
+here. Leave network first :(");
+break;
+case 2: //Edit Profile
+if(User.getName() == null) //if user hasn't been
+created...prompt profile creation
+System.out.println("Please make a profile first!
+:)");
+else { //else
+System.out.println("Editing profile...");
+System.out.print("Name:");
+User.setName(input.next());
+input.nextLine();
+System.out.print("Status:");
+User.setStatus(input.nextLine());
+System.out.println("Okay, this is now " +
+User.getName() + "'s profile! Status is now set to:"
++ User.getStatus());
+}
+break;
+case 3: //Joining network
+if(User.getName() == null) //if user hasn't been
+created...prompt profile creation
+System.out.println("Please make a profile first!
+:)");
+else { //else
+System.out.println("Joining Network...");
+Network.people[netWorkSize-1].setName(User.getName()); //set empty profile to user
+credentials
+Network.people[netWorkSize-1].setStatus(User.getStatus());
+System.out.println("Yay," + User.getName() + "
+has successfully joined!");
+}
+break;
+case 4: //modify profile credentials
+if(User.getName() == null)
+System.out.println("Can't leave if you never
+joined!");
+else {
+System.out.println("Leaving Network...");
+Network.people[netWorkSize-1].setName(null);
+//assign values to null
+Network.people[netWorkSize-1].setStatus(null);
+System.out.println("Come again!");
+}
+break;
+case 5: //search profile & see info
+System.out.print("Who are you looking for?:");
+input.nextLine();
+searchName = input.nextLine();
+for(int i = 0; i < netWorkSize; i++) { //compare
+name strings
+if(searchName.equals(Network.people[i].getName())) {
+Network.printList(i); //print info if
+true
+searchSuccess = true;
+//see a match
+}
+}
+if(searchSuccess != true) //if no match,
+then...
+System.out.println("They don't exist!");
+break;
+case 6: //ADD FRIENDS - same as case 5, except change
+to add method
+if(User.getName() == null) { //deny
+if no profile is made
+System.out.println("I know you're
+excited but make a profile first!");
+}
+else {
+addSuccess = false;
+System.out.print("Who do you want to add?:");
+input.nextLine();
+searchName = input.nextLine();
+for(int i = 0; i < netWorkSize; i++) {
+//compare name strings
+if(searchName.equals(Network.people[i].getName())) {
+Network.addFriend(5, i);
+//print info if true
+addSuccess = true;
+//see a match
+System.out.println("Success! You
+have added " + Network.people[i].getName() + "!");
+}
+}
+if(addSuccess != true) //if no
+match, then...
+System.out.println("Hmm...imaginary
+friend?");
+}
+break;
+case 7: //quit
+insideNetwork = -1;
+break;
+default:
+break;
+}
+}
+} //end inside network
+System.out.println("Sorry to see you leave :(. Come back soon!");
+}
+}
+//ADJACENCY LIST - GRAPH
+import java.util.LinkedList; //linked list import
+public class Graph {
+int netSize; //number of vertices//people
+LinkedList<Integer> list[]; //array of linked lists - type integer
+//constructor profiles (name, status) in array
+Profile people[] = { new Profile("Jim Halpert","Married"),
+new Profile("Todd Packer","Single"),
+new Profile("Pam Beesley","Married"),
+new Profile("Michael Scott","Single"),
+new Profile("Dwight Schrute","Married"),
+new Profile()
+};
+public Graph(int netSize) {
+this.netSize = netSize; //set number of Friends to parameter
+list = new LinkedList[netSize]; //array size = number of people
+for (int i = 0; i < netSize ; i++) {
+list[i] = new LinkedList<>(); //create empty linked list for each vertex
+}
+}
+public void addFriend(int src, int dst){ //add friend
+//add forward edge / add a friend
+list[src].addFirst(dst);
+//add back edge / reverse; friend knows you added them
+list[dst].addFirst(src);
+}
+public void printList(int search){ //print info of searched member
+System.out.println("Name:" + people[search].getName());
+System.out.println("Status:" + people[search].getStatus());
+//print friendslist
+if(list[search].size()>0) {
+System.out.print("Friends with:");
+for (int j = 0; j < list[search].size(); j++) {
+System.out.print(people[list[search].get(j)].getName() + "/");
+}
+System.out.println();
+}
+}
+public void printMembers() {
+for(int i = 0; i < netSize; i++) {
+System.out.print (people[i].getName() + "/");
+}
+}
+}
+//Profile Class: includes name, status, and list of friends
+public class Profile {
+private String name; //user name
+private String status; //-----status
+public Profile() {
+this.name = null;
+this.status = null;
+};
+public Profile (String name, String status) {
+this.name = name;
+this.status = status;
+}
+//GET SET METHODS
+public String getName() {
+return this.name;
+}
+public void setName(String name) {
+this.name = name;
+}
+public String getStatus() {
+return this.status;
+}
+public void setStatus(String status) {
+this.status = status;
+}
+}

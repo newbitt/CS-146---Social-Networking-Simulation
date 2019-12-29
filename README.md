@@ -7,3 +7,8 @@ list to create a network of vertices and edges, as well as class objects to repr
 Additional code consists of mainly switch/if-else statements to mimic a basic text UI
 (user-interface) or menu, and a seperate array was used for objects for proper display of
 names and statuses.
+
+INCOMPLETE:
+errors known - 
+adding
+removing
